@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Co-Learning</title>
+    <link rel="stylesheet" href="./src/style/style.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,400,0,0" />
+</head>
+<body>
+    <div class="container">
+        <form class="formulario" id="cadastro">
+            <legend>Criação de Cards </legend>
+            <span id="error"></span>
+            <div>
+                <input type="text" name="titulo" placeholder="Titulo" autocomplete="none" min="4" required>
+            </div>
+            <div>
+                <input type="text" name="url" placeholder="Url" autocomplete="none" required>
+            </div>
+            <div>
+                <textarea name="descricao" cols="30" rows="10" placeholder="Descrição" resize="none" minlength="4" required></textarea>
+            </div>
+            <input type="submit" value="cadastrar" disabled></input>
+        </form>
+        <div class="cardContainer">
+            <div class="headerContainerCards" id="headerContainerCards">
+                <h1>Cards Criados</h1>
+            </div>
+            <div class="dataCards" id="containerCards">
+            </div>
+        </div>
+    </div>
+</body>
+<script src="./src/script/index.js"></script>
+</html>
