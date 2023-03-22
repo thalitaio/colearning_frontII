@@ -1,6 +1,6 @@
 //Manipulação de elementos com JS
 
-const DATA = [];
+const githubList = [];
 const [tituloInput, urlInput, submitInput] = document.querySelectorAll("input");
 const descricaoInput = document.querySelector("textarea");
 const headerContainerCards = document.getElementById("headerContainerCards");
@@ -65,49 +65,28 @@ const storageCard = (titulo, url, descricao) => {
 };
 
 const toLocalStorage = () => {
-  let objetString = JSON.stringify(
-    storageCard(tituloInput.value, urlInput.value, descricaoInput.value)
-  );
-  localStorage.setItem(tituloInput.value, objetString);
+  const objetString = JSON.stringify(githubList);
+  localStorage.setItem("githubList", objetString);
 };
 
 const getLocalStorage = () => {
-  for (let i = 0; i < localStorage.length; i++) {
-    const key = localStorage.key(i);
-    const value = localStorage.getItem(key);
+  const storageList = localStorage.getItem("githubList");
+  const objectList = JSON.parse(storageList);
+  githubList.push(objectList);
 
-    try {
-      const object = JSON.parse(value);
-      DATA.push(object);
-      DATA.sort((a, b) => {
-        if (a.title < b.title) {
-          return -1;
-        } else if (a.title == b.title) {
-          return 0;
-        } else {
-          return 1;
-        }
-      });
-
-      createCard(containerCards, DATA);
-    } catch (e) {
-      console.error(e);
-    }
-  }
+  createCard(containerCards, githubList);
 };
 
 const handleSubmit = (event) => {
   event.preventDefault();
 
-  DATA.push(
-    storageCard(tituloInput.value, urlInput.value, descricaoInput.value)
-  );
-  createCard(containerCards, DATA);
-  DATA.sort((a, b) => {
-    if (a.title < b.title) return -1;
-    else if (a.title == b.title) return 0;
-    else return 1;
+  githubList.push({
+    title: tituloInput.value,
+    url: urlInput.value,
+    description: descricaoInput.value,
   });
+
+  createCard(containerCards, DATA);
 
   toLocalStorage();
   formElement.reset();
