@@ -13,6 +13,12 @@ body {
     font-family: 'Roboto', sans-serif;
 }
 
+.error {
+    margin-top: 4px;
+    display: none;
+    color: #ff0000cc;
+}
+
 .container {
     display: flex;
     flex-direction: column;
@@ -36,14 +42,7 @@ body {
     font-weight: 700;
 }
 
-.formulario span {
-    display: none;
-    margin: 0;
-    color: #ff0000cc;
-}
-
-.formulario input:not([type="submit"]),
-textarea {
+.formulario input:not([type="submit"]), textarea {
     color: #FFFFFF;
     background: #1F1F1F;
     width: 100%;
@@ -85,9 +84,9 @@ textarea {
 }
 
 .cardContainer .headerContainerCards {
-    display: flex;
     justify-content: space-between;
-    padding: 1.5rem;
+    padding-top: 8px;
+    padding-bottom: 16px;
 }
 
 .cardContainer .headerContainerCards button {
