@@ -11,27 +11,29 @@
 <body>
     <div class="container">
         <form class="formulario" id="cadastro">
-            <legend>Criação de Cards </legend>
-            <span id="error"></span>
+            <legend>📝 Criação de Cards</legend>
             <div>
                 <input type="text" name="titulo" placeholder="Titulo" autocomplete="none" min="4" required>
+                <span class="error"></span>
             </div>
             <div>
                 <input type="text" name="url" placeholder="Url" autocomplete="none" required>
+                <span class="error"></span>
             </div>
             <div>
                 <textarea name="descricao" cols="30" rows="10" placeholder="Descrição" resize="none" minlength="4" required></textarea>
+                <span class="error"></span>
             </div>
             <input type="submit" value="cadastrar" disabled></input>
         </form>
         <div class="cardContainer">
             <div class="headerContainerCards" id="headerContainerCards">
-                <h1>Cards Criados</h1>
+                <h1>🍃 Nada por aqui...</h1>
             </div>
             <div class="dataCards" id="containerCards">
             </div>
         </div>
     </div>
+    <script src="./src/script/index.js"></script>
 </body>
-<script src="./src/script/index.js"></script>
 </html>

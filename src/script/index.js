@@ -1,113 +1,236 @@
-//Manipulação de elementos com JS
-let githubList = [];
-const [tituloInput, urlInput, submitInput] = document.querySelectorAll("input");
-const descricaoInput = document.querySelector("textarea");
-const headerContainerCards = document.getElementById("headerContainerCards");
+/*
+  Cria um array de cards salvos
+*/
+let savedCards = [];
+
+/*
+  Pega os elementos da DOM
+*/
+const [
+  titleInputElement, 
+  urlInputElement, 
+  submitInputElement
+] = document.querySelectorAll("input");
+const [
+  titleErrorElement, 
+  urlErrorElement, 
+  descriptionErrorElement
+] = document.querySelectorAll(".error");
+const descriptionInputElement = document.querySelector("textarea");
+const headerContainerElement = document.querySelector("#headerContainerCards h1");
 const formElement = document.getElementById("cadastro");
-const containerCards = document.getElementById("containerCards");
+const containerCardsElement = document.getElementById("containerCards");
 const errorElement = document.getElementById("error");
-//Criação do Card
-const createCard = (container, data) => {
-  container.innerHTML = "";
-  //fazendo uso de nodes
-  // criação do card usando o método .map(), utilizado em arrays para criar um novo array a partir do original
-  data.map((element, index) => {
-    container.innerHTML += `
-            <div class="card" id="${index}">
-                <div class="cardHeader"
-                    style="background: url('${element.url}');
-                    background-size: cover;
-                    background-position: center;
-                ">
-                    <div class="close-box" onclick="removeSavedCards(this)">
-                        <span class="material-symbols-outlined">
-                        disabled_by_default
-                        </span>
-                    </div>
-                </div>
-                    <div class="cardBody">
-                        <span class="title">
-                            ${element.title}
-                        </span>
-                        <p>
-                            ${element.description}
-                        </p>
-                    </div>
-            </div>
-    `;
+
+/*
+  Cria o elemento html do card
+*/
+const createCardElement = ({ id, url, title, description }) => {
+  return (`
+    <div class="card" id="${id}">
+      <div 
+        class="cardHeader"
+        style="
+          background: url('${url}');
+          background-size: cover;
+          background-position: center;
+        "
+      >
+        <div class="close-box" onclick="removeCard('${id}')">
+          <span class="material-symbols-outlined">
+            disabled_by_default
+          </span>
+        </div>
+      </div>
+      <div class="cardBody">
+        <span class="title"> ${title} </span>
+        <p> ${description} </p>
+      </div>
+    </div>
+  `);
+};
+
+/*
+  Exibe a mensagem de erro
+*/
+const showError = (error = "", element) => {
+  element.style.display = "block";
+  element.innerText = error;
+};
+
+/*
+  Esconde a mensagem de erro
+*/
+const hideError = (element) => {
+  element.style.display = "none";
+};
+
+/*
+  Salva os cards no localStorage
+*/
+const saveToLocalStorage = (card) => {
+  // Adiciona o card no array de cards salvos
+  savedCards.push(card);
+
+  // Transforma o array de cards em JSON
+  const jsonString = JSON.stringify(savedCards);
+  
+  // Salva o JSON no localStorage
+  localStorage.setItem("savedCards", jsonString);
+};
+
+/*
+  Carrega os cards salvos no localStorage
+*/
+const getFromLocalStorage = () => {
+  // Pega os cards salvos no localStorage
+  const jsonString = localStorage.getItem("savedCards");
+  
+  // Transforma o JSON em um array de objetos
+  const cards = JSON.parse(jsonString);
+  
+  // Se não houver cards, retorna (fim da função)
+  if (!cards) return;
+  
+  // Se houver cards, adiciona no array de cards salvos
+  savedCards = cards;
+
+  // Adiciona os cards na DOM
+  savedCards.forEach(card => {
+    const cardElement = createCardElement(card);
+    containerCardsElement.innerHTML += cardElement;
   });
 };
-//essa função é refente à mensagem de erro do span
-const showError = (error = "") => {
-  errorElement.style.display = "block";
-  errorElement.innerText = error;
-  setTimeout(() => {
-    errorElement.innerText = "";
-    errorElement.style.display = "none";
-  }, 1000);
-};
-//guargando o card
-const storageCard = (titulo, url, descricao) => {
-  return {
-    title: titulo,
-    url: url,
-    description: descricao,
-  };
-};
-const toLocalStorage = () => {
-  const objetString = JSON.stringify(githubList);
-  localStorage.setItem("githubList", objetString);
-};
-const getLocalStorage = () => {
-  const storageList = localStorage.getItem("githubList");
-  const objectList = JSON.parse(storageList);
-  if (!objectList) {
-    return;
-  }
-  githubList = objectList;
-  createCard(containerCards, githubList);
-};
+
+/*
+  Adiciona o card na DOM e no localStorage
+*/
 const handleSubmit = (event) => {
+  // Previne o comportamento padrão do submit
   event.preventDefault();
-  githubList.push({
-    title: tituloInput.value,
-    url: urlInput.value,
-    description: descricaoInput.value,
-  });
-  createCard(containerCards, githubList);
-  toLocalStorage();
+
+  const title = titleInputElement.value;
+  const url = urlInputElement.value;
+  const description = descriptionInputElement.value;
+  
+  // Cria um objeto com os dados do card
+  const card = {
+    // Cria um id "único" para o card
+    id: url + title + description,
+    title,
+    url,
+    description,
+  };
+  
+  // Cria o elemento html do card
+  const cardElement = createCardElement(card);
+
+  // Adiciona o card na DOM
+  containerCardsElement.innerHTML += cardElement;
+  
+  // Salva o card no localStorage
+  saveToLocalStorage(card);
+  
+  // Limpa o formulário
   formElement.reset();
-  headerContainerCards.style.display = "flex";
+  
+  // Exibe o título "Cards Salvos"
+  headerContainerElement.innerText = "🔹 Cards Salvos";
 };
-const removeSavedCards = (e) => {
-  let item = e.parentNode.parentNode.querySelector(".title").innerHTML.trim();
-  const indexToBeRemoved = githubList.findIndex(
-    (github) => github.title === item
+
+/*
+  Remove o card da DOM e do localStorage
+*/
+const removeCard = (id) => {
+  // Pega o elemento do card
+  let cardElement = document.getElementById(id);
+
+  // Remove o card da DOM
+  cardElement.remove();
+  
+  // Pega o index do card no array de cards salvos
+  const indexToBeRemoved = savedCards.findIndex(
+    (card) => card.id === id
   );
-  githubList.splice(indexToBeRemoved, 1);
-  const objetString = JSON.stringify(githubList);
-  localStorage.setItem("githubList", objetString);
-  getLocalStorage();
+  
+  // Remove o card do array de cards salvos
+  savedCards.splice(indexToBeRemoved, 1);
+  
+  // Transforma o array de cards em JSON
+  const jsonString = JSON.stringify(savedCards);
+  
+  // Salva o JSON no localStorage
+  localStorage.setItem("savedCards", jsonString);
+
+  // Se não houver mais cards, exibe o título "Nada por aqui..."
+  if (savedCards.length === 0) {
+    headerContainerElement.innerText = "🍃 Nada por aqui...";
+  }
 };
-descricaoInput.addEventListener("click", () => {
-  if (tituloInput.value.length < 4) {
-    showError("O titulo não pode ser menor que 4 caracteres");
-  } else if (!/(?=.)png|jpeg|jpg|gif/.test(urlInput.value)) {
+
+/*
+  Chama a função de salvamento no evento de submit do formulário
+*/
+formElement.addEventListener("submit", handleSubmit);
+
+/*
+  Valida os campos do formulário
+*/
+const validateForm = () => {
+  const isTitleValid = titleInputElement.value.length >= 4;
+  const isTitleEmpty = titleInputElement.value.length === 0;
+  
+  const isUrlValid = /(?=.)png|jpeg|jpg|gif/.test(urlInputElement.value);
+  const isUrlEmpty = urlInputElement.value.length === 0;
+  
+  const isDescriptionValid = descriptionInputElement.value.length >= 4;
+  const isDescriptionEmpty = descriptionInputElement.value.length === 0;
+
+  // Se o campo de título não estiver vazio, e for inválido, exibe a mensagem de erro
+  if (!isTitleEmpty && titleInputElement.value.length < 4)
     showError(
-      "A url deve ser um link terminado em formato de imagem (.png | .jpeg | .gif)"
+      "O titulo não pode ser menor que 4 caracteres", 
+      titleErrorElement
     );
-  } else if (descricaoInput.value < 4) {
-    showError("A descrição não pode ser menor que 4 caracteres");
-  } else {
-    submitInput.disabled = false;
-  }
-});
+
+  // Se o campo de url não estiver vazio, e for inválido, exibe a mensagem de erro
+  if (!isUrlEmpty && !/(?=.)png|jpeg|jpg|gif/.test(urlInputElement.value))
+    showError(
+      "A url deve ser um link terminado em formato de imagem (.png | .jpeg | .gif)",
+      urlErrorElement
+    );
+
+  // Se o campo de descrição não estiver vazio, e for inválido, exibe a mensagem de erro
+  if (!isDescriptionEmpty && descriptionInputElement.value.length < 4)
+    showError(
+      "A descrição não pode ser menor que 4 caracteres", 
+      descriptionErrorElement
+    );
+
+  // Remove as mensagens de erro dos campos válidos
+  if (isTitleValid) hideError(titleErrorElement);
+  if (isUrlValid) hideError(urlErrorElement);
+  if (isDescriptionValid) hideError(descriptionErrorElement);
+
+  // Se todos os campos forem válidos, habilita o botão de submit
+  if (isTitleValid && isUrlValid && isDescriptionValid)
+    submitInputElement.disabled = false;
+  else 
+    submitInputElement.disabled = true;
+}
+
+// Adiciona validação nos eventos de keyup dos inputs
+titleInputElement.addEventListener("keyup", validateForm);
+urlInputElement.addEventListener("keyup", validateForm);
+descriptionInputElement.addEventListener("keyup", validateForm);
+
+/*
+  Carrega os cards salvos no localStorage ao carregar a página
+*/
 document.addEventListener("DOMContentLoaded", () => {
-  getLocalStorage();
-  if (githubList === 0) {
-    headerContainerCards.style.display = "none";
-  } else {
-    headerContainerCards.style.display = "block";
-  }
-  formElement.addEventListener("submit", handleSubmit);
+  getFromLocalStorage();
+  
+  // Se houver cards salvos, exibe a mensagem de "Cards Salvos"
+  if (savedCards.length !== 0)
+    headerContainerElement.innerHTML = "🔹 Cards Salvos";
 });
